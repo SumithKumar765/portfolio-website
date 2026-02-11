@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumith Kumar | Software Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Instant Theme Loader -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // Blue-500
+                        secondary: '#10B981', // Emerald-500
+                        dark: '#0f172a', // Slate-900
+                        darker: '#020617', // Slate-950
+                        cardDark: '#1e293b', // Slate-800
+                        termBg: '#0c0c0c',
+                        termHeader: '#1f1f1f',
+                        termWinHeader: '#3a96dd',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace'],
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'modal-in': 'modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'blink': 'blink 1s step-end infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        modalIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95) translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        blink: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        body, div, section, nav, p, h1, h2, h3, h4, span, button, a, input, li {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563EB; }
+
+        .chat-messages::-webkit-scrollbar { width: 5px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark .chat-messages::-webkit-scrollbar-thumb { background: #475569; }
+
+        /* Utils */
+        .fade-in-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
+
+        .gradient-text {
+            background: linear-gradient(to right, #3B82F6, #10B981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tilt-card { transform-style: preserve-3d; perspective: 1000px; transition: all 0.3s ease-out, opacity 0.3s ease-out; }
+        .tilt-card:hover { transform: translateY(-5px) scale(1.01); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        .dark .tilt-card:hover { box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.15); }
+
+        .typing-cursor::after { content: '|'; animation: blink 1s step-start infinite; margin-left: 2px; color: #3B82F6; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        #particles-js { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; opacity: 0.6; pointer-events: none; }
+        
+        .chat-bubble { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; transform: scale(0.9); transform-origin: bottom left; }
+        .chat-bubble.user { transform-origin: bottom right; }
+        @keyframes popIn { 100% { opacity: 1; transform: scale(1); } }
+
+        .typing-dot { width: 6px; height: 6px; border-radius: 50%; background-color: currentColor; animation: typing 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        .chip {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.05);
+            color: #3B82F6;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .chip:hover { background: #3B82F6; color: white; transform: translateY(-1px); }
+        .dark .chip { color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1); }
+        .dark .chip:hover { background: #60a5fa; color: #0f172a; }
+
+        /* Terminal Specific Styles */
+        .terminal-grid {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: #3B82F6;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white relative bg-slate-50 dark:bg-darker text-slate-900 dark:text-slate-100 h-screen overflow-hidden" id="body-container">
+
+    <!-- TERMINAL LANDING PAGE -->
+    <div id="terminal-landing" class="fixed inset-0 z-[100] bg-[#020617] terminal-grid flex flex-col items-center justify-center p-4 transition-transform duration-700 ease-in-out">
+        <h1 class="text-4xl md:text-5xl font-bold mb-8 text-white text-center">
+            Welcome to <span class="text-primary">Sumith Kumar's Portfolio</span>
+        </h1>
+        <p class="text-slate-400 mb-8 text-center text-sm">Interact with the terminal below to explore my portfolio</p>
+
+        <!-- OS Switcher -->
+        <div class="flex gap-4 mb-6">
+            <button onclick="setTheme('windows')" class="w-12 h-12 rounded-xl bg-white/10 hover:bg-[#0078D6] transition-colors flex items-center justify-center text-white text-2xl os-btn active" id="btn-windows">
+                <i class="fab fa-windows"></i>
+            </button>
+            <button onclick="setTheme('linux')" class="w-12 h-12 rounded-xl bg-white/10 hover:bg-[#FCC624] hover:text-black transition-colors flex items-center justify-center text-white text-2xl os-btn" id="btn-linux">
+                <i class="fab fa-linux"></i>
+            </button>
+            <button onclick="setTheme('mac')" class="w-12 h-12 rounded-xl bg-white/10 hover:bg-white hover:text-black transition-colors flex items-center justify-center text-white text-2xl os-btn" id="btn-mac">
+                <i class="fab fa-apple"></i>
+            </button>
+        </div>
+
+        <!-- Terminal Window -->
+        <div id="terminal-window" class="w-full max-w-4xl bg-black rounded-lg shadow-2xl overflow-hidden border border-slate-700 font-mono text-sm md:text-base flex flex-col h-[500px]">
+            <!-- Terminal Header -->
+            <div id="terminal-header" class="bg-[#3a96dd] px-4 py-2 flex items-center justify-between select-none">
+                <div class="flex items-center gap-2" id="header-controls">
+                    <span class="font-semibold text-white text-xs tracking-wide">Command Prompt</span>
+                </div>
+                <div class="flex gap-4 text-white text-xs">
+                    <i class="fas fa-minus"></i>
+                    <i class="far fa-square"></i>
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+
+            <!-- Terminal Body -->
+            <div class="flex-1 p-4 overflow-y-auto text-slate-300 space-y-2 custom-scrollbar" id="terminal-body" onclick="document.getElementById('term-input').focus()">
+                <div class="mb-4">
+                    <p class="text-green-400">Welcome to Sumith's Terminal Portfolio!</p>
+                    <p>Type <span class="text-yellow-400">help</span> to see available commands.</p>
+                    <p>Type <span class="text-yellow-400">portfolio</span> to skip to the main portfolio.</p>
+                </div>
+                <div id="terminal-output"></div>
+                <div class="flex items-center">
+                    <span id="prompt-text" class="mr-2 text-white">C:\Users\sumith></span>
+                    <input type="text" id="term-input" class="bg-transparent border-none outline-none text-white flex-1 font-mono" autocomplete="off" autofocus>
+                </div>
+            </div>
+        </div>
+        <p class="text-slate-500 mt-6 text-xs animate-pulse">Type <span class="text-primary font-bold">portfolio</span> to enter</p>
+    </div>
+
+    <!-- MAIN SITE CONTENT (Initially Hidden) -->
+    <div id="main-site" class="hidden opacity-0 transition-opacity duration-1000">
+        <canvas id="particles-js"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/90 dark:bg-darker/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center group cursor-pointer select-none">
+                    <a href="#" class="text-2xl font-bold font-mono tracking-tighter flex items-center">
+                        <span class="text-primary group-hover:text-secondary transition-colors">&lt;</span>
+                        <span class="text-slate-900 dark:text-white font-extrabold mx-0.5 transition-colors">Sumith Kumar</span>
+                        <span class="text-secondary group-hover:text-primary transition-colors">/&gt;</span>
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-1">
+                    <div class="flex items-baseline space-x-1">
+                        <a href="#home" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">Home</a>
+                        <a href="#about" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">About</a>
+                        <a href="#skills" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">Skills</a>
+                        <a href="#projects" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">Projects</a>
+                        <a href="#certifications" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">Certifications</a>
+                    </div>
+                    
+                    <div class="flex items-center ml-4 gap-3">
+                        <button id="theme-toggle" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-white/20 text-slate-500 dark:text-yellow-400 transition-all focus:outline-none">
+                            <i class="fas fa-sun text-lg absolute transition-all duration-300 transform rotate-0 scale-100 dark:rotate-90 dark:scale-0 dark:opacity-0"></i>
+                            <i class="fas fa-moon text-lg absolute transition-all duration-300 transform -rotate-90 scale-0 opacity-0 dark:rotate-0 dark:scale-100 dark:opacity-100"></i>
+                        </button>
+                        <a href="#contact" class="bg-primary hover:bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold transition-all transform hover:scale-105 shadow-lg shadow-primary/25">Hire Me</a>
+                    </div>
+                </div>
+
+                <div class="md:hidden flex items-center gap-4">
+                    <button id="theme-toggle-mobile" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-yellow-400">
+                        <i class="fas fa-adjust"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="text-slate-700 dark:text-slate-200 hover:text-primary focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-cardDark border-b border-slate-200 dark:border-white/10 absolute w-full shadow-xl">
+            <div class="px-4 pt-2 pb-4 space-y-1">
+                <a href="#home" class="text-slate-700 dark:text-slate-200 hover:text-primary block px-3 py-3 rounded-md text-base font-medium border-b border-slate-100 dark:border-white/5">Home</a>
+                <a href="#about" class="text-slate-700 dark:text-slate-200 hover:text-primary block px-3 py-3 rounded-md text-base font-medium border-b border-slate-100 dark:border-white/5">About</a>
+                <a href="#skills" class="text-slate-700 dark:text-slate-200 hover:text-primary block px-3 py-3 rounded-md text-base font-medium border-b border-slate-100 dark:border-white/5">Skills</a>
+                <a href="#projects" class="text-slate-700 dark:text-slate-200 hover:text-primary block px-3 py-3 rounded-md text-base font-medium border-b border-slate-100 dark:border-white/5">Projects</a>
+                <a href="#certifications" class="text-slate-700 dark:text-slate-200 hover:text-primary block px-3 py-3 rounded-md text-base font-medium border-b border-slate-100 dark:border-white/5">Certifications</a>
+                <a href="#contact" class="text-primary font-bold block px-3 py-3 rounded-md text-base">Hire Me</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center pt-16 relative overflow-hidden">
+        <div class="absolute top-0 -left-4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-96 h-96 bg-yellow-500/20 dark:bg-yellow-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500/20 dark:bg-pink-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col-reverse lg:flex-row items-center relative z-10">
+            <div class="w-full lg:w-1/2 text-center lg:text-left pt-12 lg:pt-0 fade-in-up">
+                <div class="inline-flex items-center gap-2 px-3 py-1 mb-6 text-xs font-bold tracking-widest text-secondary uppercase bg-secondary/10 rounded-full border border-secondary/20">
+                    <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span> Available for work
+                </div>
+                <h1 class="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-slate-900 dark:text-white tracking-tight">
+                    Hi, I'm <span class="gradient-text">Sumith Kumar</span>
+                </h1>
+                <h2 class="text-2xl lg:text-3xl font-semibold text-slate-600 dark:text-slate-300 mb-6 h-10 flex justify-center lg:justify-start items-center">
+                    I am a <span id="typing-text" class="text-primary ml-2 typing-cursor"></span>
+                </h2>
+                <p class="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                    Turning ideas into reality with Python, AI, and IoT. I build scalable, intelligent systems that solve real-world problems efficiently.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="#projects" class="px-8 py-4 rounded-full bg-primary hover:bg-blue-600 text-white font-bold transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-1 flex items-center justify-center gap-2">
+                        View Projects <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#contact" class="px-8 py-4 rounded-full border border-slate-300 dark:border-white/20 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all font-semibold flex items-center justify-center gap-2 hover:-translate-y-1">
+                        Contact Me
+                    </a>
+                </div>
+                
+                <div class="mt-10 flex items-center justify-center lg:justify-start space-x-6">
+                    <a href="https://github.com/SumithKumar765" target="_blank" class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all text-2xl hover:scale-110"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/tamminana-sumith-kumar-472283233/" target="_blank" class="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all text-2xl hover:scale-110"><i class="fab fa-linkedin"></i></a>
+                    <a href="mailto:kumarsumith98765@gmail.com" class="text-slate-400 hover:text-red-500 transition-all text-2xl hover:scale-110"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+            
+            <div class="w-full lg:w-1/2 flex justify-center fade-in-up" style="transition-delay: 200ms;">
+                <div class="relative w-72 h-72 sm:w-96 sm:h-96 group">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-primary to-secondary rounded-[2.5rem] blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
+                    <div class="relative w-full h-full rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-white/10 shadow-2xl bg-white dark:bg-cardDark transform transition-transform duration-500 group-hover:scale-[1.02] group-hover:rotate-1">
+                        <img src="sumit.jpg" onerror="this.src='https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80'" alt="Sumith Kumar" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Action Section -->
+    <div class="bg-slate-50 dark:bg-darker/50 pb-8 pt-4 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-center gap-4 fade-in-up">
+            <a href="resume.pdf" target="_blank" class="px-10 py-3 rounded-lg border border-slate-300 dark:border-white/20 text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary dark:hover:text-white dark:hover:border-primary transition-all font-medium flex items-center justify-center gap-2 bg-white dark:bg-white/5 hover:shadow-md group">
+                <i class="far fa-eye text-lg group-hover:scale-110 transition-transform"></i> View Resume
+            </a>
+            <a href="resume.pdf" download class="px-10 py-3 rounded-lg border border-slate-300 dark:border-white/20 text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary dark:hover:text-white dark:hover:border-primary transition-all font-medium flex items-center justify-center gap-2 bg-white dark:bg-white/5 hover:shadow-md group">
+                <i class="fas fa-download text-lg group-hover:scale-110 transition-transform"></i> Download
+            </a>
+        </div>
+    </div>
+
+    <!-- About & Skills Section -->
+    <section id="about" class="py-24 bg-slate-50 dark:bg-darker/50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">About & Skills</h2>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+		<p class="text-slate-600 dark:text-slate-400 mb-6">Learn more about my background, education, and professional experience.</p>
+
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <!-- Left Column: Education & Experience -->
+                <div class="space-y-8 fade-in-up">
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Education & Experience</h3>
+                                        
+                    <!-- Education Card -->
+                    <div class="bg-white dark:bg-cardDark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
+                        <h4 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-white/10 pb-2">Education</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-medium text-slate-900 dark:text-slate-100">Centurion University Of Technology and Management</h5>
+                                <p class="text-sm text-slate-600 dark:text-slate-400">B.Tech. in Electronics and Communication Engineering (2020 - 2024)</p>
+                                <p class="text-xs text-slate-500 mt-1">CGPA: 8.64</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Experience Card -->
+                    <div class="bg-white dark:bg-cardDark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
+                        <h4 class="text-lg font-semibold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-white/10 pb-2">Experience</h4>
+                        <div class="space-y-6">
+                            <!-- Experience 1 -->
+                            <div class="group">
+                                <h5 class="font-medium text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">ex - intern at Exposys Data Labs</h5>
+                                <p class="text-sm text-slate-600 dark:text-slate-400">Exposys Data Labs · Internship</p>
+                                <p class="text-xs text-slate-500 mt-1 mb-2">Apr 2023 - Jun 2023 · Virtual · Remote</p>
+                                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                                    <i class="far fa-gem text-primary"></i>
+                                    <span>Data Build Tool (DBT), Django</span>
+                                </div>
+                            </div>
+
+                            <!-- Experience 2 -->
+                            <div class="group border-t border-slate-100 dark:border-white/5 pt-4">
+                                <h5 class="font-medium text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">Intern</h5>
+                                <p class="text-sm text-slate-600 dark:text-slate-400">Centurion University · Part-time</p>
+                                <p class="text-xs text-slate-500 mt-1 mb-2">Mar 2023 - May 2023 · Odisha, India · On-site</p>
+                                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                                    <i class="far fa-gem text-primary"></i>
+                                    <span>VLSI, VLSI CAD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Skills -->
+                <div class="fade-in-up" style="transition-delay: 200ms;">
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-8">Technical Skills</h3>
+                    
+                    <div class="space-y-8">
+                        <!-- AI & GenAI -->
+                        <div>
+                            <h4 class="text-lg font-medium text-slate-700 dark:text-slate-300 mb-3">AI & GenAI</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-md text-sm font-medium">GenAI</span>
+				<span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-md text-sm font-medium">Agentic-Ai</span>
+                              <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-md text-sm font-medium">LangChain</span>														                      <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-md text-sm font-medium">TensorFlow</span>
+                                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-md text-sm font-medium">PyTorch</span>
+                                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-md text-sm font-medium">OpenCV</span>
+                                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-md text-sm font-medium">Pandas/Numpy</span>
+                            </div>
+                        </div>
+
+                        <!-- Development & Databases -->
+                        <div>
+                            <h4 class="text-lg font-medium text-slate-700 dark:text-slate-300 mb-3">Development & Databases</h4>
+                            <div class="flex flex-wrap gap-2">
+				<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">Python</span>
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">Flask</span>
+				<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">Django</span>
+				<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">Redis</span>
+				<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">Git/Github</span>
+
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">C / C++</span>
+				 <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">JavaScript</span>
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">HTML / CSS / Bootstrap CSS</span>
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">Data Structures</span>
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">MySQL</span>
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">MongoDB</span>
+				<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md text-sm font-medium">Docker</span>
+                            </div>
+                        </div>
+
+                        <!-- Tools & Soft Skills -->
+                        <div>
+                            <h4 class="text-lg font-medium text-slate-700 dark:text-slate-300 mb-3">Tools & Professional Skills</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-md text-sm font-medium">IOT</span>
+                                <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-md text-sm font-medium">Power BI</span>
+                                <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-md text-sm font-medium">MS Excel</span>
+                                <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-md text-sm font-medium">Communication</span>
+                                <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-md text-sm font-medium">Time Management</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24 bg-white dark:bg-darker">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 fade-in-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">Featured Projects</h2>
+                <div class="w-24 h-1.5 bg-primary mx-auto rounded-full mb-8"></div>
+                
+                <div class="flex justify-center flex-wrap gap-3 mb-8">
+                    <button onclick="filterProjects('all')" class="filter-btn active px-6 py-2 rounded-full border border-primary bg-primary text-white transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">All</button>
+                    <button onclick="filterProjects('ai')" class="filter-btn px-6 py-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-primary hover:text-primary transition-all bg-white dark:bg-cardDark hover:shadow-md">AI / LLM</button>
+                    <button onclick="filterProjects('iot')" class="filter-btn px-6 py-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-primary hover:text-primary transition-all bg-white dark:bg-cardDark hover:shadow-md">IoT</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+                
+                <!-- NEW Project: Interview Prep (Index 0) -->
+                <div class="tilt-card project-card ai h-full" data-category="ai">
+                    <div class="h-full bg-white dark:bg-cardDark rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 relative group flex flex-col shadow-lg hover:shadow-2xl transition-all duration-300">
+                        <div class="h-52 overflow-hidden relative bg-indigo-50 dark:bg-slate-900 flex items-center justify-center group">
+                            <img src="https://images.unsplash.com/photo-1565688534245-05d6b5be184a?auto=format&fit=crop&w=1000&q=80" alt="Interview Prep" class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-indigo-900/30 group-hover:bg-indigo-900/10 transition-colors"></div>
+                            <i class="fas fa-user-tie text-6xl text-white drop-shadow-lg z-10 transform group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-4 right-4 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 shadow-sm">AI / EdTech</div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-indigo-500 transition-colors">Intelligent Interview Prep</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-3 leading-relaxed">An intelligent interview preparation tool powered by OpenAI. Input a job description to get tailored strategies and understand role requirements.</p>
+                            <div class="mt-auto flex gap-3">
+                                <button onclick="openModal('project', 0)" class="flex-1 py-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-indigo-500 hover:text-white border border-slate-200 dark:border-white/10 transition-all font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 group-hover:border-indigo-500/50 group-hover:bg-indigo-500 group-hover:text-white">
+                                    View Case Study <i class="fas fa-arrow-right text-sm transform group-hover:translate-x-1 transition-transform"></i>
+                                </button>
+                                <a href="https://github.com/SumithKumar765/Job-Summarizer-Genai-based-project" target="_blank" class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors flex items-center justify-center group/github" title="View Code">
+                                    <i class="fab fa-github text-xl group-hover/github:scale-110 transition-transform"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: AI Assistant (Index 1) -->
+                <div class="tilt-card project-card ai h-full" data-category="ai">
+                    <div class="h-full bg-white dark:bg-cardDark rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 relative group flex flex-col shadow-lg hover:shadow-2xl transition-all duration-300">
+                        <div class="h-52 overflow-hidden relative bg-cyan-50 dark:bg-slate-900 flex items-center justify-center group">
+                            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="AI Assistant" class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-cyan-900/30 group-hover:bg-cyan-900/10 transition-colors"></div>
+                            <i class="fas fa-terminal text-6xl text-white drop-shadow-lg z-10 transform group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-4 right-4 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-500/30 shadow-sm">Automation</div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-cyan-500 transition-colors">AI-Based CLI Assistant</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-3 leading-relaxed">A versatile Windows CLI tool offering 30+ features like email automation, image description, and task management using Google Bard API.</p>
+                            <div class="mt-auto flex gap-3">
+                                <button onclick="openModal('project', 1)" class="flex-1 py-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-cyan-500 hover:text-white border border-slate-200 dark:border-white/10 transition-all font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 group-hover:border-cyan-500/50 group-hover:bg-cyan-500 group-hover:text-white">
+                                    View Case Study <i class="fas fa-arrow-right text-sm transform group-hover:translate-x-1 transition-transform"></i>
+                                </button>
+                                <a href="https://github.com/SumithKumar765/Ai-based-assistant" target="_blank" class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors flex items-center justify-center group/github" title="View Code">
+                                    <i class="fab fa-github text-xl group-hover/github:scale-110 transition-transform"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: LinkedIn (Index 2) -->
+                <div class="tilt-card project-card ai h-full" data-category="ai">
+                    <div class="h-full bg-white dark:bg-cardDark rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 relative group flex flex-col shadow-lg hover:shadow-2xl transition-all duration-300">
+                        <div class="h-52 overflow-hidden relative bg-blue-50 dark:bg-slate-900 flex items-center justify-center group">
+                            <!-- CHANGED IMAGE -->
+                            <img src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=1000&q=80" alt="LinkedIn Project" class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-blue-900/30 group-hover:bg-blue-900/10 transition-colors"></div>
+                            <i class="fab fa-linkedin text-6xl text-white drop-shadow-lg z-10 transform group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-4 right-4 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 shadow-sm">AI / GenAI</div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-primary transition-colors">LinkedIn Post Generator</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-3 leading-relaxed">Advanced LLM tool fine-tuned on influencer data to generate professional posts in English and Hinglish.</p>
+                            <div class="mt-auto flex gap-3">
+                                <button onclick="openModal('project', 2)" class="flex-1 py-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-primary hover:text-white border border-slate-200 dark:border-white/10 transition-all font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 group-hover:border-primary/50 group-hover:bg-primary group-hover:text-white">
+                                    View Case Study <i class="fas fa-arrow-right text-sm transform group-hover:translate-x-1 transition-transform"></i>
+                                </button>
+                                <a href="https://github.com/SumithKumar765/GEN-AI-Linkedin-post-genrator" target="_blank" class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors flex items-center justify-center group/github" title="View Code">
+                                    <i class="fab fa-github text-xl group-hover/github:scale-110 transition-transform"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Agrobot (Index 3) -->
+                <div class="tilt-card project-card iot h-full" data-category="iot">
+                    <div class="h-full bg-white dark:bg-cardDark rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 relative group flex flex-col shadow-lg hover:shadow-2xl transition-all duration-300">
+                        <div class="h-52 overflow-hidden relative bg-green-50 dark:bg-slate-900 flex items-center justify-center group">
+                            <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1000&q=80" alt="Agrobot" class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-green-900/30 group-hover:bg-green-900/20 transition-colors"></div>
+                            <i class="fas fa-robot text-6xl text-white drop-shadow-lg z-10 transform group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-4 right-4 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30 shadow-sm">IoT</div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-secondary transition-colors">Raspberry-Pi Agrobot</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-3 leading-relaxed">Machine learning-based robot using Raspberry Pi to detect plant diseases via VGG16/CNN models.</p>
+                            <div class="mt-auto flex gap-3">
+                                <button onclick="openModal('project', 3)" class="flex-1 py-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-secondary hover:text-white border border-slate-200 dark:border-white/10 transition-all font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 group-hover:border-secondary/50 group-hover:bg-secondary group-hover:text-white">
+                                    View Case Study <i class="fas fa-arrow-right text-sm transform group-hover:translate-x-1 transition-transform"></i>
+                                </button>
+                                <a href="https://github.com/SumithKumar765/pest_detection_using_deepneural_networks_flaskapp" target="_blank" class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors flex items-center justify-center group/github" title="View Code">
+                                    <i class="fab fa-github text-xl group-hover/github:scale-110 transition-transform"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+  <!-- Explore More Projects Section -->
+    <section class="py-20 bg-slate-50 dark:bg-darker/30 border-t border-slate-200 dark:border-white/5 relative">
+        <div class="max-w-4xl mx-auto px-4 text-center fade-in-up">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">Explore More Projects</h2>
+            <p class="text-slate-600 dark:text-slate-400 mb-10 max-w-xl mx-auto text-lg">Check out my GitHub profile for more projects, contributions, and open-source work</p>
+            
+            <div class="flex flex-col items-center gap-6">
+                <a href="https://github.com/SumithKumar765" target="_blank" class="inline-flex items-center justify-center px-8 py-3 rounded-lg border border-slate-300 dark:border-white/20 text-slate-700 dark:text-white hover:bg-white dark:hover:bg-white/10 hover:border-primary dark:hover:border-white/40 transition-all font-semibold gap-2 group shadow-sm hover:shadow-md bg-white dark:bg-cardDark">
+                    <i class="fab fa-github text-xl group-hover:scale-110 transition-transform"></i> View All Projects
+                </a>
+                
+                <a href="#contact" class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary font-medium transition-colors inline-flex items-center gap-2 group text-sm">
+                    Let's Collaborate <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- Certifications Section -->
+    <section id="certifications" class="py-24 relative bg-slate-50 dark:bg-darker/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">Certifications</h2>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-secondary to-primary mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="tilt-card group bg-white dark:bg-cardDark rounded-2xl p-8 border border-slate-200 dark:border-white/5 shadow-lg hover:shadow-xl transition-all flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-6 -mt-6"></div>
+                    <div class="flex items-start justify-between mb-6 relative z-10">
+                        <div class="w-14 h-14 bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center justify-center text-primary text-3xl shadow-inner"><i class="fab fa-aws"></i></div>
+                        <span class="text-xs font-bold tracking-wide text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-white/5 px-3 py-1 rounded-full">2023</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-primary transition-colors">AWS IoT Analytics</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 flex-grow">Introduction to AWS IoT Analytics course by AWS.</p>
+                    <button onclick="openModal('cert', 0)" class="w-full py-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-primary hover:text-white border border-slate-200 dark:border-white/10 transition-all font-medium text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2">View Credentials <i class="fas fa-certificate"></i></button>
+                </div>
+                <div class="tilt-card group bg-white dark:bg-cardDark rounded-2xl p-8 border border-slate-200 dark:border-white/5 shadow-lg hover:shadow-xl transition-all flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-bl-full -mr-6 -mt-6"></div>
+                    <div class="flex items-start justify-between mb-6 relative z-10">
+                        <div class="w-14 h-14 bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center justify-center text-secondary text-3xl shadow-inner"><i class="fab fa-aws"></i></div>
+                        <span class="text-xs font-bold tracking-wide text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-white/5 px-3 py-1 rounded-full">2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-secondary transition-colors">AWS Greengrass</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 flex-grow">Introduction to AWS Greengrass for Raspberry Pi.</p>
+                    <button onclick="openModal('cert', 1)" class="w-full py-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-secondary hover:text-white border border-slate-200 dark:border-white/10 transition-all font-medium text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2">View Credentials <i class="fas fa-certificate"></i></button>
+                </div>
+                <div class="tilt-card group bg-white dark:bg-cardDark rounded-2xl p-8 border border-slate-200 dark:border-white/5 shadow-lg hover:shadow-xl transition-all flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-bl-full -mr-6 -mt-6"></div>
+                    <div class="flex items-start justify-between mb-6 relative z-10">
+                        <div class="w-14 h-14 bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center justify-center text-purple-500 dark:text-purple-400 text-3xl shadow-inner"><i class="fas fa-brain"></i></div>
+                        <span class="text-xs font-bold tracking-wide text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-white/5 px-3 py-1 rounded-full">2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors">Generative AI</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 flex-grow">Generative AI course on Coursera.</p>
+                    <button onclick="openModal('cert', 2)" class="w-full py-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-purple-500 hover:text-white border border-slate-200 dark:border-white/10 transition-all font-medium text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2">View Credentials <i class="fas fa-certificate"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 relative bg-white dark:bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16 fade-in-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">Get In Touch</h2>
+                <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Let's connect and discuss opportunities, collaborations, or just have a chat about technology.</p>
+            </div>
+
+            <!-- Contact Card -->
+            <div class="max-w-2xl mx-auto bg-white dark:bg-cardDark rounded-2xl p-8 md:p-12 border border-slate-200 dark:border-white/5 shadow-2xl fade-in-up">
+                <div class="text-center mb-10">
+                    <h3 class="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Let's Work Together</h3>
+                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                        I'm always interested in new opportunities and exciting projects. Whether you're looking for a developer, have a project in mind, or just want to connect, I'd love to hear from you.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Send Email Button -->
+                    <a href="mailto:kumarsumith98765@gmail.com" class="block w-full py-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-center transition-all shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5">
+                        <i class="fas fa-envelope mr-2"></i> Send Email
+                    </a>
+
+                    <!-- GitHub Profile Button -->
+                    <a href="https://github.com/SumithKumar765" target="_blank" class="block w-full py-4 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-semibold text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                        <i class="fab fa-github mr-2"></i> GitHub Profile
+                    </a>
+
+                    <!-- LinkedIn Profile Button -->
+                    <a href="https://www.linkedin.com/in/tamminana-sumith-kumar-472283233/" target="_blank" class="block w-full py-4 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-semibold text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                        <i class="fab fa-linkedin mr-2 text-blue-600 dark:text-blue-400"></i> LinkedIn Profile
+                    </a>
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-slate-100 dark:border-white/5 text-center">
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Based in India • Available for remote work and collaborations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 dark:bg-darker border-t border-slate-200 dark:border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <a href="#" class="text-2xl font-bold font-mono tracking-tighter block mb-6"><span class="text-primary">&lt;</span><span class="text-slate-900 dark:text-white">Sumith</span><span class="text-secondary">/&gt;</span></a>
+            <div class="flex justify-center space-x-8 mb-8">
+                <a href="https://github.com/SumithKumar765" target="_blank" class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors transform hover:scale-110"><i class="fab fa-github text-2xl"></i></a>
+                <a href="https://www.linkedin.com/in/tamminana-sumith-kumar-472283233/" target="_blank" class="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:scale-110"><i class="fab fa-linkedin text-2xl"></i></a>
+                <a href="mailto:kumarsumith98765@gmail.com" class="text-slate-400 hover:text-red-500 transition-colors transform hover:scale-110"><i class="fas fa-envelope text-2xl"></i></a>
+            </div>
+            <p class="text-slate-500 dark:text-slate-500 text-sm">&copy; 2024 Sumith Kumar. Built with <i class="fas fa-heart text-red-500 mx-1"></i> & Code.</p>
+        </div>
+    </footer>
+    </div>
+
+    <!-- UNIFIED MODAL -->
+    <div id="universal-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md transition-opacity" onclick="closeModal()"></div>
+        <div class="relative min-h-screen md:flex md:items-center md:justify-center p-4">
+            <div class="bg-white dark:bg-cardDark border border-slate-200 dark:border-white/10 w-full max-w-5xl rounded-3xl shadow-2xl relative overflow-hidden animate-modal-in max-h-[90vh] flex flex-col">
+                <button onclick="closeModal()" class="absolute top-4 right-4 z-50 p-2 bg-white/80 dark:bg-black/50 text-slate-900 dark:text-white rounded-full hover:bg-white hover:text-black transition-all shadow-md backdrop-blur-sm"><i class="fas fa-times text-xl w-8 h-8 flex items-center justify-center"></i></button>
+                <div class="overflow-y-auto modal-scroll p-0">
+                    <div class="grid grid-cols-1 md:grid-cols-2 h-full">
+                        <div class="h-64 md:h-auto relative flex items-center justify-center bg-slate-100 dark:bg-darker/50 overflow-hidden group">
+                            <img id="modal-image" src="" class="w-full h-full object-cover hidden transition-transform duration-700 group-hover:scale-105" alt="Cover">
+                            <i id="modal-icon" class="hidden text-9xl text-slate-300 dark:text-white/10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"></i>
+                            <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-cardDark via-transparent to-transparent md:bg-gradient-to-r pointer-events-none"></div>
+                        </div>
+                        <div class="p-8 md:p-12 flex flex-col">
+                            <div>
+                                <div id="modal-category" class="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider uppercase bg-primary/10 rounded-full border border-primary/20 text-primary"></div>
+                                <h2 id="modal-title" class="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white leading-tight"></h2>
+                                <p id="modal-desc" class="text-slate-600 dark:text-slate-300 leading-relaxed text-lg mb-8 border-l-4 border-primary/30 pl-4"></p>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-list-ul text-primary"></i> <span id="modal-list-title">How It Works</span></h3>
+                                <ul id="modal-list" class="space-y-3 mb-8 text-slate-600 dark:text-slate-400"></ul>
+                            </div>
+                            <div class="border-t border-slate-200 dark:border-white/10 pt-6 mt-auto">
+                                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4" id="modal-tags-title">Tech Stack</h3>
+                                <div id="modal-tags" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            <div class="mt-6 pt-2 flex items-center gap-2 text-sm text-slate-400 dark:text-slate-500"><i class="far fa-calendar-alt"></i> <span id="modal-meta"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTELLIGENT CHATBOT -->
+    <div class="fixed bottom-6 right-6 z-[60] flex flex-col items-end pointer-events-none">
+        <div id="chat-window" class="hidden pointer-events-auto w-80 md:w-96 bg-white dark:bg-cardDark border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-slide-up flex flex-col mb-4 origin-bottom-right transition-all duration-300" style="height: 500px;">
+            <div class="bg-gradient-to-r from-primary to-blue-600 p-4 flex justify-between items-center text-white shadow-md">
+                <div class="flex items-center gap-3">
+                    <!-- Profile Avatar in Chat Header -->
+                    <img src="sumit.jpg" alt="Sumith" class="w-9 h-9 rounded-full object-cover border border-white/30 shadow-md">
+                    <div>
+                        <h4 class="font-bold text-sm">Sumith AI</h4>
+                        <p class="text-[10px] text-blue-100 opacity-90">Online</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="voice-toggle-btn" class="text-white/80 hover:text-white transition-colors" title="Toggle Voice">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <button id="chat-close-btn" class="text-white/80 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto chat-messages bg-slate-50 dark:bg-darker space-y-3"></div>
+            
+            <!-- Suggestion Chips -->
+            <div id="suggestion-chips" class="px-4 py-2 bg-slate-50 dark:bg-darker flex gap-2 overflow-x-auto no-scrollbar">
+                <button class="chip" onclick="handleChipClick('Projects')">Projects</button>
+                <button class="chip" onclick="handleChipClick('Skills')">Skills</button>
+                <button class="chip" onclick="handleChipClick('Contact')">Contact</button>
+            </div>
+
+            <div id="typing-indicator" class="hidden px-4 py-2 bg-slate-50 dark:bg-darker flex items-center gap-1">
+                <span class="typing-dot text-slate-400"></span><span class="typing-dot text-slate-400"></span><span class="typing-dot text-slate-400"></span>
+            </div>
+            
+            <div class="p-3 bg-white dark:bg-cardDark border-t border-slate-200 dark:border-white/10">
+                <form id="chat-form" class="flex gap-2 relative">
+                    <input type="text" id="chat-input" placeholder="Ask anything..." class="flex-1 bg-slate-100 dark:bg-dark/50 border border-slate-200 dark:border-white/10 rounded-full pl-4 pr-10 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" autocomplete="off">
+                    <button type="submit" class="absolute right-1.5 top-1.5 w-8 h-8 bg-primary hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-all shadow-sm transform hover:scale-105"><i class="fas fa-paper-plane text-xs"></i></button>
+                </form>
+            </div>
+        </div>
+        <button id="chat-toggle-btn" class="pointer-events-auto w-14 h-14 bg-gradient-to-r from-primary to-blue-600 text-white rounded-full shadow-xl shadow-blue-500/30 flex items-center justify-center transition-all transform hover:scale-110 hover:rotate-3 focus:outline-none group relative">
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-darker animate-bounce-slow"></span>
+            <i class="fas fa-comment-dots text-2xl"></i>
+        </button>
+    </div>
+
+    <script>
+        // --- TERMINAL LOGIC ---
+        const terminalLanding = document.getElementById('terminal-landing');
+        const mainSite = document.getElementById('main-site');
+        const termInput = document.getElementById('term-input');
+        const termOutput = document.getElementById('terminal-output');
+        const bodyContainer = document.getElementById('body-container');
+        
+        // OS Themes Configuration
+        const themes = {
+            windows: {
+                headerColor: '#3a96dd',
+                prompt: 'C:\\Users\\sumith>',
+                textColor: 'text-slate-300',
+                headerText: 'Command Prompt'
+            },
+            linux: {
+                headerColor: '#300a24', // Ubuntu purple or dark gray
+                prompt: 'sumith@portfolio:~$',
+                textColor: 'text-green-400',
+                headerText: 'sumith@portfolio:~'
+            },
+            mac: {
+                headerColor: '#2d2d2d',
+                prompt: 'sumith@macbook ~ %',
+                textColor: 'text-white',
+                headerText: 'sumith — -zsh'
+            }
+        };
+
+        let currentTheme = 'windows';
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            const config = themes[theme];
+            
+            // Update UI
+            document.getElementById('terminal-header').style.backgroundColor = config.headerColor;
+            document.getElementById('prompt-text').textContent = config.prompt;
+            document.getElementById('header-controls').querySelector('span').textContent = config.headerText;
+            
+            // Highlight active button
+            document.querySelectorAll('.os-btn').forEach(btn => btn.classList.remove('ring-2', 'ring-white'));
+            document.getElementById(`btn-${theme}`).classList.add('ring-2', 'ring-white');
+            
+            // Focus input
+            termInput.focus();
+        }
+
+        function addToTerminal(text, isCommand = false) {
+            const line = document.createElement('div');
+            if (isCommand) {
+                const promptSpan = document.createElement('span');
+                promptSpan.className = 'mr-2 text-white';
+                promptSpan.textContent = themes[currentTheme].prompt;
+                line.appendChild(promptSpan);
+                const cmdSpan = document.createElement('span');
+                cmdSpan.className = 'text-white';
+                cmdSpan.textContent = text;
+                line.appendChild(cmdSpan);
+            } else {
+                line.innerHTML = text; // Allow HTML for formatted output
+            }
+            termOutput.appendChild(line);
+            document.getElementById('terminal-body').scrollTop = document.getElementById('terminal-body').scrollHeight;
+        }
+
+        termInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = this.value.trim().toLowerCase();
+                addToTerminal(this.value, true);
+                this.value = '';
+
+                switch(command) {
+                    case 'help':
+                        addToTerminal(`
+                            <div class="pl-4 text-slate-400">
+                                <p><span class="text-yellow-400 w-24 inline-block">portfolio</span> - Go to the main portfolio website</p>
+                                <p><span class="text-yellow-400 w-24 inline-block">about</span> - Learn a bit about me</p>
+                                <p><span class="text-yellow-400 w-24 inline-block">skills</span> - View my technical skills</p>
+                                <p><span class="text-yellow-400 w-24 inline-block">contact</span> - Get contact information</p>
+                                <p><span class="text-yellow-400 w-24 inline-block">clear</span> - Clear the terminal screen</p>
+                                <p><span class="text-yellow-400 w-24 inline-block">whoami</span> - Display current user</p>
+                            </div>
+                        `);
+                        break;
+                    case 'portfolio':
+                        addToTerminal('<span class="text-green-400">Launching portfolio...</span>');
+                        setTimeout(launchPortfolio, 800);
+                        break;
+                    case 'about':
+                        addToTerminal('<p class="text-slate-300">I am Sumith Kumar, a Software Developer passionate about Python, AI, and IoT. I build scalable intelligent systems.</p>');
+                        break;
+                    case 'skills':
+                        addToTerminal('<p class="text-slate-300">Python, Django, Flask, AI/ML, TensorFlow, OpenCV, IoT, AWS, C/C++</p>');
+                        break;
+                    case 'contact':
+                        addToTerminal('<p class="text-slate-300">Email: kumarsumith98765@gmail.com</p>');
+                        break;
+                    case 'whoami':
+                        addToTerminal('<p class="text-slate-300">Sumith Kumar - Software Developer</p>');
+                        break;
+                    case 'clear':
+                        termOutput.innerHTML = '';
+                        break;
+                    case '':
+                        break;
+                    default:
+                        addToTerminal(`<p class="text-red-400">'${command}' is not recognized as an internal or external command.</p>`);
+                }
+            }
+        });
+
+        function launchPortfolio() {
+            terminalLanding.style.transform = 'translateY(-100%)';
+            mainSite.classList.remove('hidden');
+            setTimeout(() => {
+                mainSite.classList.remove('opacity-0');
+                bodyContainer.classList.remove('h-screen', 'overflow-hidden'); // Enable scrolling
+                initParticles(); // Start particles
+            }, 500);
+        }
+
+        // --- DATA ---
+        const projectsData = [
+            // ADDED: Interview Prep (Index 0)
+            {
+                title: "Intelligent Interview Prep",
+                category: "AI / EdTech",
+                date: "2024",
+                image: "https://images.unsplash.com/photo-1565688534245-05d6b5be184a?auto=format&fit=crop&w=1000&q=80",
+                desc: "An intelligent interview preparation tool powered by OpenAI and built with Streamlit. Simply input a job description, and the app will help you understand the role requirements while providing tailored strategies to approach your interview with ease and confidence.",
+                points: ["Input job descriptions to analyze requirements.", "Get tailored interview strategies.", "Powered by OpenAI for intelligent insights.", "Built with Streamlit for a seamless UI."],
+                tags: ["OpenAI", "Streamlit", "Python"]
+            },
+            // Previous Index 0 -> Now 1
+            {
+                title: "AI-Based CLI Assistant",
+                category: "AI / Automation",
+                date: "February 2024",
+                image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                desc: "A versatile Windows CLI tool offering 30+ features like email automation, image description, and task management using the Google Bard API.",
+                points: ["Automated Email Sending & Web Search.", "Image Description & Text Summarization via AI.", "Task management with built-in To-Do list.", "Powered by Google Bard API."],
+                tags: ["Python", "Google Bard API", "CLI"]
+            },
+            // Previous Index 1 -> Now 2
+            {
+                title: "LinkedIn Post Generator",
+                category: "AI / Generative Model",
+                date: "January 2025",
+                // CHANGED IMAGE
+                image: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=1000&q=80",
+                desc: "Advanced LLM tool fine-tuned on influencer data to generate professional posts in English and Hinglish.",
+                points: ["Collected 100-200 posts from top influencers.", "Fine-tuned Llama-3.1-8B-Instant model.", "Generates posts in English and Hinglish.", "Deployed via Streamlit UI."],
+                tags: ["Llama-3.1", "Python", "Streamlit", "ML"]
+            },
+            // Previous Index 2 -> Now 3
+            {
+                title: "Raspberry-Pi Agrobot",
+                category: "IoT / Robotics",
+                date: "March 2024",
+                image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1000&q=80",
+                desc: "A machine learning-based robot using Raspberry Pi to detect plant diseases and analyze their causes with high accuracy.",
+                points: ["Captures plant images via VGG16.", "CNN classifies diseases.", "RNN analyzes sequential symptoms.", "Real-time monitoring for farmers."],
+                tags: ["Raspberry Pi", "VGG16", "CNN / RNN"]
+            },
+            // Removed Text Summarizer
+        ];
+
+        const certificationsData = [
+            {
+                title: "AWS IoT Analytics",
+                category: "Certification",
+                date: "August 2023",
+                icon: "fab fa-aws",
+                desc: "Introduction to AWS IoT Analytics course by AWS.",
+                points: ["Developed understanding of IoT analytics on AWS.", "Learned effective data usage for innovation.", "Explored cutting-edge IoT analytics techniques."],
+                tags: ["AWS", "IoT", "Analytics"]
+            },
+            {
+                title: "AWS Greengrass",
+                category: "Certification",
+                date: "2024",
+                icon: "fab fa-aws",
+                desc: "Introduction to AWS Greengrass for Raspberry Pi.",
+                points: ["Implemented Greengrass for IoT Integration.", "Demonstrated edge computing proficiency.", "Enabled efficient data processing at the edge."],
+                tags: ["AWS", "Greengrass", "Edge Computing"]
+            },
+            {
+                title: "Generative AI",
+                category: "Certification",
+                date: "2024",
+                icon: "fas fa-brain",
+                desc: "Generative AI course on Coursera.",
+                points: ["Built understanding of GANs and VAEs.", "Hands-on experience with image/text synthesis.", "Explored real-world AI challenges."],
+                tags: ["GenAI", "GANs", "Coursera"]
+            }
+        ];
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('universal-modal');
+        function openModal(type, index) {
+            const data = type === 'project' ? projectsData[index] : certificationsData[index];
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-desc').innerText = data.desc;
+            document.getElementById('modal-category').innerText = data.category;
+            document.getElementById('modal-meta').innerText = "Timeline: " + data.date;
+            document.getElementById('modal-list-title').innerText = type === 'project' ? "Workflow & Key Features" : "Skills & Impact";
+            document.getElementById('modal-tags-title').innerText = type === 'project' ? "Tech Stack" : "Topics Covered";
+            const imgEl = document.getElementById('modal-image');
+            const iconEl = document.getElementById('modal-icon');
+            if (type === 'project') { imgEl.src = data.image; imgEl.classList.remove('hidden'); iconEl.classList.add('hidden'); } 
+            else { imgEl.classList.add('hidden'); iconEl.className = `${data.icon} text-9xl text-slate-300 dark:text-white/10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`; iconEl.classList.remove('hidden'); }
+            const listEl = document.getElementById('modal-list'); listEl.innerHTML = ''; data.points.forEach(pt => { listEl.innerHTML += `<li class="flex items-start gap-3"><i class="fas fa-check-circle text-primary mt-1 shrink-0"></i> <span>${pt}</span></li>`; });
+            const tagsEl = document.getElementById('modal-tags'); tagsEl.innerHTML = ''; data.tags.forEach(tag => { tagsEl.innerHTML += `<span class="px-3 py-1 bg-slate-100 dark:bg-white/5 rounded-md text-xs font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 uppercase tracking-wide">${tag}</span>`; });
+            modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+        }
+        function closeModal() { modal.classList.add('hidden'); document.body.style.overflow = ''; }
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+
+        // --- ADVANCED CHATBOT LOGIC (Voice & Profile Pic) ---
+        const chatToggle = document.getElementById('chat-toggle-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const chatClose = document.getElementById('chat-close-btn');
+        const voiceToggle = document.getElementById('voice-toggle-btn');
+        const chatInput = document.getElementById('chat-input');
+        const chatMsgs = document.getElementById('chat-messages');
+        const typingInd = document.getElementById('typing-indicator');
+        let isChatOpen = false;
+        let userName = "";
+        let isVoiceEnabled = true;
+
+        // Weighted Keyword Matching System with Conversations
+        const knowledgeBase = [
+            { id: 'greeting', keywords: ['hello', 'hi', 'hey', 'morning', 'afternoon', 'evening', 'greetings'], weight: 1, response: () => {
+                const hour = new Date().getHours();
+                const timeGreeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+                return `${timeGreeting}${userName ? ' ' + userName : ''}! I'm Sumith's AI assistant. I'm here to chat about **projects**, **skills**, or just to say hi!`;
+            }},
+            { id: 'farewell', keywords: ['bye', 'goodbye', 'see you', 'later', 'night'], weight: 2, response: () => "Goodbye! It was great chatting with you. Feel free to come back anytime!" },
+            { id: 'thanks', keywords: ['thank', 'thanks', 'thx', 'appreciate'], weight: 2, response: () => "You're very welcome! Is there anything else I can help you with?" },
+            { id: 'how_are_you', keywords: ['how are you', 'how do you do', 'hows it going'], weight: 2, response: () => "I'm functioning perfectly, thanks for asking! I'm ready to tell you all about Sumith's work." },
+            { id: 'joke', keywords: ['joke', 'funny', 'laugh'], weight: 2, response: () => "Why do programmers prefer dark mode? Because light attracts bugs! 🐛" },
+            { id: 'name', keywords: ['name', 'who', 'you', 'creator', 'sumith'], weight: 2, response: () => "I am an AI assistant for **Sumith Kumar**, a Software Developer specializing in Python, AI, and IoT." },
+            { id: 'contact', keywords: ['contact', 'email', 'phone', 'hire', 'reach', 'call', 'gmail'], weight: 3, response: () => "You can reach Sumith at <a href='mailto:kumarsumith98765@gmail.com' class='text-primary underline'>kumarsumith98765@gmail.com</a> or call **+91 7659833962**." },
+            { id: 'skills', keywords: ['skill', 'stack', 'tech', 'language', 'python', 'java', 'c++', 'code'], weight: 3, response: () => "Sumith is an expert in **Python (Django/Flask)**, **C/C++**, **HTML/CSS**, and **JavaScript**. He also excels in **AI/ML (OpenCV, LLMs)** and **IoT**." },
+            { id: 'projects', keywords: ['project', 'work', 'portfolio', 'build', 'app'], weight: 2, response: () => "He has built: <br>1. **Intelligent Interview Prep**<br>2. **AI CLI Assistant**<br>3. **LinkedIn Post Generator**<br>4. **Agrobot**.<br>Click the chips below to know more!" },
+            { id: 'education', keywords: ['education', 'college', 'degree', 'study', 'university', 'cgpa', 'b.e'], weight: 3, response: () => "He completed his **B.E. in ECE** from Centurion University (2020-2024) with a **8.64 CGPA**." },
+            { id: 'certifications', keywords: ['certif', 'aws', 'course', 'learning', 'coursera'], weight: 3, response: () => "Certifications include: <br>• **AWS IoT Analytics**<br>• **AWS Greengrass**<br>• **Generative AI** (Coursera)." },
+            { id: 'linkedin_proj', keywords: ['linkedin', 'generator', 'llama', 'hinglish'], weight: 5, response: () => "The **LinkedIn Generator** uses **Llama-3.1** to create professional posts in English & Hinglish, fine-tuned on influencer data." },
+            { id: 'agrobot_proj', keywords: ['agrobot', 'plant', 'disease', 'raspberry', 'vgg16'], weight: 5, response: () => "The **Agrobot** uses a Raspberry Pi and **VGG16 (CNN)** models to detect plant diseases in real-time." },
+            { id: 'interview_prep', keywords: ['interview', 'prep', 'openai', 'streamlit'], weight: 5, response: () => "The **Intelligent Interview Prep** tool uses OpenAI to analyze job descriptions and provide tailored interview strategies." },
+            { id: 'ai_assistant', keywords: ['assistant', 'bard', 'cli', 'automation'], weight: 5, response: () => "The **AI CLI Assistant** automates Windows tasks like email, web search, and image description using the **Google Bard API**." }
+        ];
+
+        setTimeout(() => { addBotMessage("Hi there! 👋 I'm Sumith's AI assistant. How can I help you today?"); }, 1000);
+
+        function toggleChat() { isChatOpen = !isChatOpen; chatWindow.classList.toggle('hidden'); if (isChatOpen) chatInput.focus(); }
+        chatToggle.addEventListener('click', toggleChat);
+        chatClose.addEventListener('click', toggleChat);
+
+        // Toggle Voice
+        voiceToggle.addEventListener('click', () => {
+            isVoiceEnabled = !isVoiceEnabled;
+            voiceToggle.innerHTML = isVoiceEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+        });
+
+        // Speech Synthesis Function
+        function speak(text) {
+            // Updated Logic: Only speak if Chat Window is NOT hidden
+            const chatHidden = document.getElementById('chat-window').classList.contains('hidden');
+            if (!isVoiceEnabled || !window.speechSynthesis || chatHidden) return;
+            
+            // Clean text (remove HTML tags)
+            const cleanText = text.replace(/<[^>]*>/g, '');
+            // Cancel pending
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            // Try to find a standard English voice
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
+            if (preferredVoice) utterance.voice = preferredVoice;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function addBotMessage(html) {
+            const div = document.createElement('div'); div.className = 'flex items-start gap-2.5 chat-bubble';
+            // Use Profile Picture for Bot Avatar
+            div.innerHTML = `
+                <img src="sumit.jpg" class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-white/10 shrink-0 mt-1 shadow-sm">
+                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed">${html}</div>
+            `;
+            chatMsgs.appendChild(div); chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            
+            // Speak the response
+            speak(html);
+        }
+
+        function addUserMessage(text) {
+            const div = document.createElement('div'); div.className = 'flex items-start gap-2.5 flex-row-reverse chat-bubble user';
+            div.innerHTML = `<div class="w-8 h-8 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0 mt-1"><i class="fas fa-user text-xs"></i></div><div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none shadow-md text-sm leading-relaxed">${text}</div>`;
+            chatMsgs.appendChild(div); chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        }
+
+        function findBestResponse(input) {
+            const lowerInput = input.toLowerCase();
+            if (lowerInput.includes("my name is")) {
+                const name = input.split("is")[1].trim();
+                userName = name;
+                return `Nice to meet you, ${userName}! What would you like to know about Sumith?`;
+            }
+            let bestMatch = null; let maxScore = 0;
+            knowledgeBase.forEach(item => {
+                let score = 0;
+                item.keywords.forEach(word => { if (lowerInput.includes(word)) score += item.weight; });
+                if (score > maxScore) { maxScore = score; bestMatch = item; }
+            });
+            if (maxScore > 0) return bestMatch.response();
+            return "I'm learning every day! Try asking about **Projects**, **Skills**, **Education**, or just say **Hi**.";
+        }
+
+        function handleChipClick(text) {
+            chatInput.value = text;
+            document.getElementById('chat-form').dispatchEvent(new Event('submit'));
+        }
+
+        document.getElementById('chat-form').addEventListener('submit', (e) => {
+            e.preventDefault(); const text = chatInput.value.trim(); if (!text) return;
+            addUserMessage(text); chatInput.value = ''; typingInd.classList.remove('hidden'); chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            setTimeout(() => { typingInd.classList.add('hidden'); const response = findBestResponse(text); addBotMessage(response); }, 600 + Math.random() * 400);
+        });
+
+        // --- THEME & FILTER (FIXED LOGIC) ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) { document.documentElement.classList.remove('dark'); localStorage.theme = 'light'; } 
+            else { document.documentElement.classList.add('dark'); localStorage.theme = 'dark'; }
+            initParticles();
+        }
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        themeToggleMobile.addEventListener('click', toggleTheme);
+
+        function filterProjects(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white', 'border-transparent');
+                btn.classList.add('bg-white', 'dark:bg-cardDark', 'text-slate-600', 'dark:text-slate-300', 'border-slate-200', 'dark:border-white/10');
+                if(btn.innerText.toLowerCase().includes(cat) || (cat==='all' && btn.innerText==='All')) { 
+                    btn.classList.remove('bg-white', 'dark:bg-cardDark', 'text-slate-600', 'dark:text-slate-300', 'border-slate-200', 'dark:border-white/10'); 
+                    btn.classList.add('bg-primary', 'text-white', 'border-transparent'); 
+                }
+            });
+
+            // FIXED FILTER LOGIC
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach(card => {
+                const isMatch = cat === 'all' || card.dataset.category === cat;
+                
+                if (isMatch) {
+                    // Show logic
+                    card.style.display = 'flex'; // Use flex to maintain layout (it has flex-col inside)
+                    setTimeout(() => {
+                        card.classList.remove('opacity-0', 'scale-95');
+                        card.classList.add('opacity-100', 'scale-100');
+                    }, 10);
+                } else {
+                    // Hide logic
+                    card.classList.remove('opacity-100', 'scale-100');
+                    card.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                }
+            });
+        }
+
+        // Typing Effect
+        const textToType = ["Software Developer", "Python Expert", "IoT Innovator", "Creative Problem Solver"];
+        let textIndex = 0, charIndex = 0, isDeleting = false;
+        function typeWriter() {
+            const currentText = textToType[textIndex];
+            const typeElement = document.getElementById('typing-text');
+            typeElement.textContent = currentText.substring(0, isDeleting ? charIndex - 1 : charIndex + 1);
+            charIndex = isDeleting ? charIndex - 1 : charIndex + 1;
+            let speed = isDeleting ? 50 : 100;
+            if (!isDeleting && charIndex === currentText.length) { speed = 2000; isDeleting = true; }
+            else if (isDeleting && charIndex === 0) { isDeleting = false; textIndex = (textIndex + 1) % textToType.length; }
+            setTimeout(typeWriter, speed);
+        }
+        document.addEventListener('DOMContentLoaded', typeWriter);
+
+        // Particles
+        const canvas = document.getElementById('particles-js');
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        class Particle {
+            constructor(x, y) { this.x = x; this.y = y; this.size = Math.random() * 2; this.speedX = Math.random() - 0.5; this.speedY = Math.random() - 0.5; }
+            update() { this.x += this.speedX; this.y += this.speedY; if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX; if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY; }
+            draw() { ctx.fillStyle = document.documentElement.classList.contains('dark') ? 'rgba(59, 130, 246, 0.5)' : 'rgba(59, 130, 246, 0.8)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        function initParticles() { particlesArray = []; for(let i=0; i< (canvas.width*canvas.height)/15000; i++) particlesArray.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height)); }
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update(); particlesArray[i].draw();
+                for (let j = i; j < particlesArray.length; j++) {
+                    const dx = particlesArray[i].x - particlesArray[j].x; const dy = particlesArray[i].y - particlesArray[j].y; const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 100) { ctx.beginPath(); ctx.strokeStyle = `rgba(59, 130, 246, ${(1 - dist/100) * (document.documentElement.classList.contains('dark') ? 0.5 : 0.8)})`; ctx.lineWidth = 0.5; ctx.moveTo(particlesArray[i].x, particlesArray[i].y); ctx.lineTo(particlesArray[j].x, particlesArray[j].y); ctx.stroke(); }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        // initParticles() will be called when portfolio is launched
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); });
+
+        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); });
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+        
+        const skillObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if(entry.isIntersecting) { const bar = entry.target; const width = bar.getAttribute('data-width'); bar.style.width = width; } }); });
+        document.querySelectorAll('.skill-bar').forEach(bar => skillObserver.observe(bar));
+        
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => { document.getElementById('mobile-menu').classList.toggle('hidden'); });
+    </script>
+</body>
+</html>
